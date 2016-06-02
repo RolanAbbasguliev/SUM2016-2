@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "T02EYES", "T02EYES.vcproj", "{C4A0F353-48E3-45A9-8323-D14C0751F7CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4A0F353-48E3-45A9-8323-D14C0751F7CC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C4A0F353-48E3-45A9-8323-D14C0751F7CC}.Debug|Win32.Build.0 = Debug|Win32
+		{C4A0F353-48E3-45A9-8323-D14C0751F7CC}.Release|Win32.ActiveCfg = Release|Win32
+		{C4A0F353-48E3-45A9-8323-D14C0751F7CC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
