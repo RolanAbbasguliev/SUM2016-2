@@ -817,3 +817,4 @@ __inline MATR MatrFrustum( DBL Left, DBL Right, DBL Bottom, DBL Top, DBL Near, D
 #endif /* __VEC_H_ */
 
 /* END OF 'VEC.H' FILE */
+

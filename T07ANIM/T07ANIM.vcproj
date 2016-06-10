@@ -179,17 +179,49 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DEF.H"
+				>
+			</File>
+			<File
 				RelativePath=".\MAIN.C"
 				>
 			</File>
-			<File
-				RelativePath=".\VEC.C"
+			<Filter
+				Name="Animation system"
 				>
-			</File>
-			<File
-				RelativePath=".\VEC.H"
+				<File
+					RelativePath=".\ANIM.C"
+					>
+				</File>
+				<File
+					RelativePath=".\ANIM.H"
+					>
+				</File>
+				<File
+					RelativePath=".\UNITS.C"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Math Support"
 				>
-			</File>
+				<File
+					RelativePath=".\VEC.C"
+					>
+				</File>
+				<File
+					RelativePath=".\VEC.H"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Unit Samples"
+				>
+				<File
+					RelativePath=".\U_BALL.C"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

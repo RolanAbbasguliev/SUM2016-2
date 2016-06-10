@@ -40,7 +40,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   m = MatrView(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
   m = MatrOrtho(-1, 1, -1, 1, -1, 1);
   m = MatrFrustum(-1, 1, -1, 1, 1, 1000);
-
 } /* End of 'MinMain' function */
 
 /* END OF 'MAIN.C' FILE */
