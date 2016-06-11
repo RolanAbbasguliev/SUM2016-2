@@ -221,6 +221,14 @@
 					RelativePath=".\U_BALL.C"
 					>
 				</File>
+				<File
+					RelativePath=".\U_CLOCK.C"
+					>
+				</File>
+				<File
+					RelativePath=".\UNITS.H"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

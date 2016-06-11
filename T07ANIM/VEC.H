@@ -12,8 +12,9 @@
 
 #include <windows.h>
 
-/* Base float point type */
+/* Base float point types */
 typedef double DBL;
+typedef FLOAT FLT;
 
 /* Angle transform constants */
 #define PI 3.14159265358979323846
