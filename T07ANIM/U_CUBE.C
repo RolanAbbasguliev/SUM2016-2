@@ -55,7 +55,7 @@ vg4PRIM Cube =
  */
 static VOID VG4_UnitInit( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
 {
-  Uni->Pos = VecSet(Rnd0() * 5, Rnd0() * 5, Rnd0() * 5);
+  Uni->Pos = VecSet(Rnd1() * 5, Rnd1() * 5, Rnd1() * 5);
   Uni->TimerShift = Rnd1() * 59;
   Uni->TimerSpeed = Rnd1() * 8;
 } /* End of 'VG4_UnitInit' function */
@@ -97,7 +97,7 @@ static VOID VG4_UnitRender( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
   VG4_RndMatrWorld = MatrMulMatr(MatrScale(VecSet(0.1, 0.1, 0.1)),
                      MatrMulMatr(MatrRotateY((Uni->TimerSpeed * Ani->Time) * 30 + Uni->TimerShift),
                                  MatrTranslate(VecAddVec(Uni->Pos,
-                                                         VecMulNum(VecSet(Ani->JX, Ani->JY, Ani->JZ), 3)))));
+                                                         VecMulNum(VecSet(/*Ani->JX, Ani->JY, Ani->JZ*/0, 0, 0), 3)))));
   VG4_RndPrimDraw(&Cube);
 } /* End of 'VG4_UnitRender' function */
 

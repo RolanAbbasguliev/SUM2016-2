@@ -64,7 +64,7 @@ static VOID VG4_UnitClose( vg4UNIT_BALL *Uni, vg4ANIM *Ani )
  */
 static VOID VG4_UnitResponse( vg4UNIT_BALL *Uni, vg4ANIM *Ani )
 {
-  DBL t = Uni->TimerSpeed * clock() / 1000.0 + Uni->TimerShift;
+  DBL t = Uni->TimerSpeed * Ani->GlobalTime + Uni->TimerShift;
 
   Uni->Shift = VecSet(30 * sin(t), 30 * cos(t), 0);
 } /* End of 'VG4_UnitResponse' function */

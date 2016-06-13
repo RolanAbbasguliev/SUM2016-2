@@ -12,7 +12,7 @@
 #pragma comment(lib, "winmm")
 
 /* Joystic axis value obtain macro function */
-#define VG4_GET_JOYSTIC_AXIS(A) (2.0 * (ji.dw##A##pos - jc.w##A##min) / (jc.w##A##max - jc.w##A##min - 1) - 1)
+#define VG4_GET_JOYSTICK_AXIS(A) (2.0 * (ji.dw##A##pos - jc.w##A##min) / (jc.w##A##max - jc.w##A##min - 1) - 1)
 
 /* Global mouse wheel delta value */
 INT VG4_MouseWheel;
@@ -60,9 +60,9 @@ VOID VG4_AnimInit( HWND hWnd )
   VG4_RndMatrView = MatrView(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
   VG4_RndMatrProj = MatrFrustum(-1, 1, -1, 1, 1, 100);
 
-  VG4_RndProjDist = 1;
+  VG4_RndProjDist = 0.1;
   VG4_RndFarClip = 500;
-  VG4_RndProjSize = 1;
+  VG4_RndProjSize = 0.1;
 } /* End of 'VG4_AnimInit' function */
 
 /* Animation system deinitialization function.
@@ -206,10 +206,10 @@ VOID VG4_AnimRender( VOID )
           VG4_Anim.JBut[i] = (ji.dwButtons >> i) & 1;
 
         /* Axes */
-        VG4_Anim.JX = VG4_GET_JOYSTIC_AXIS(X);
-        VG4_Anim.JY = VG4_GET_JOYSTIC_AXIS(Y);
-        VG4_Anim.JZ = VG4_GET_JOYSTIC_AXIS(Z);
-        VG4_Anim.JR = VG4_GET_JOYSTIC_AXIS(R);
+        VG4_Anim.JX = VG4_GET_JOYSTICK_AXIS (X);
+        VG4_Anim.JY = VG4_GET_JOYSTICK_AXIS (Y);
+        VG4_Anim.JZ = VG4_GET_JOYSTICK_AXIS (Z);
+        VG4_Anim.JR = VG4_GET_JOYSTICK_AXIS (R);
 
         /* Point of view */
         VG4_Anim.JPov = ji.dwPOV == 0xFFFF ? 0 : ji.dwPOV / 4500 + 1;
@@ -233,7 +233,7 @@ VOID VG4_AnimRender( VOID )
   {
     SelectObject(VG4_Anim.hDC, GetStockObject(DC_PEN));
     SelectObject(VG4_Anim.hDC, GetStockObject(DC_BRUSH));
-    SetDCPenColor(VG4_Anim.hDC, RGB(0, 0, 0));
+    SetDCPenColor(VG4_Anim.hDC, RGB(0, 255, 0));
     SetDCBrushColor(VG4_Anim.hDC, RGB(255, 255, 255));
 
     VG4_Anim.Units[i]->Render(VG4_Anim.Units[i], &VG4_Anim);
