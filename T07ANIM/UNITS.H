@@ -23,6 +23,13 @@ vg4UNIT * VG4_UnitCreateBall( VOID );
  */
 vg4UNIT * VG4_UnitCreateClock( VOID );
 
+/* Unit cube creation function.
+ * ARGUMENTS: None.
+ * RETURNS:
+ *   (vg4UNIT *) pointer to created unit.
+ */
+vg4UNIT * VG4_UnitCreateCube( VOID );
+
 #endif /* __UNITS_H_ */
 
 /* END OF 'UNITS.H' FILE */

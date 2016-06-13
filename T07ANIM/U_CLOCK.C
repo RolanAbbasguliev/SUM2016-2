@@ -1,6 +1,6 @@
 /* FILE NAME: U_CLOCK.C
  * PROGRAMMER: VG4
- * DATE: 11.06.2016
+ * DATE: 13.06.2016
  * PURPOSE: Clock unit sample.
  */
 
@@ -37,8 +37,10 @@ static VOID VG4_UnitInit( vg4UNIT_CLOCK *Uni, vg4ANIM *Ani )
  */
 static VOID VG4_UnitResponse( vg4UNIT_CLOCK *Uni, vg4ANIM *Ani )
 {
-  if (Ani->KeysClick[VK_SPACE])
+  if (Ani->Keys[VK_SPACE])
     VG4_AnimAddUnit(VG4_UnitCreateBall());
+  if (Ani->Keys['C'])
+    VG4_AnimAddUnit(VG4_UnitCreateCube());
   if (Ani->KeysClick[VK_RETURN] && Ani->Keys[VK_MENU])
     VG4_AnimFlipFullScreen();
   if (Ani->KeysClick[VK_ESCAPE])

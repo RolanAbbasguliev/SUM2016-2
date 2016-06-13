@@ -198,6 +198,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\RENDER.C"
+					>
+				</File>
+				<File
 					RelativePath=".\UNITS.C"
 					>
 				</File>
@@ -226,7 +230,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\U_CUBE.C"
+					>
+				</File>
+				<File
 					RelativePath=".\UNITS.H"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Image handle"
+				>
+				<File
+					RelativePath=".\IMAGE.C"
+					>
+				</File>
+				<File
+					RelativePath=".\IMAGE.H"
 					>
 				</File>
 			</Filter>

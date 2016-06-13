@@ -1,13 +1,13 @@
 /* FILE NAME: ANIM.H
  * PROGRAMMER: VG4
- * DATE: 11.06.2016
+ * DATE: 13.06.2016
  * PURPOSE: Animation system definitions.
  */
 
 #ifndef __ANIM_H_
 #define __ANIM_H_
 
-#include "def.h"
+#include "image.h"
 
 /* Maximum unit count */
 #define VG4_MAX_UNITS 10000
@@ -166,6 +166,45 @@ VOID VG4_AnimFlipFullScreen( VOID );
  *   (vg4UNIT *) pointer to created unit.
  */
 vg4UNIT * VG4_AnimUnitCreate( INT Size );
+
+/***
+ * Render support
+ ***/
+
+/* Global transformation matrices */
+extern MATR
+  VG4_RndMatrWorld, /* World (object) transformation matrix */
+  VG4_RndMatrView,  /* Camera view transform */
+  VG4_RndMatrProj;  /* Projection transform */
+
+/* Projection parameters */
+extern DBL
+  VG4_RndProjDist, /* Near clip plane */
+  VG4_RndFarClip,  /* Far clip plane */
+  VG4_RndProjSize; /* Project plane size */
+
+/* Primitive representation type */
+typedef struct
+{
+  VEC *P;          /* Primitive points array */
+  INT NumOfP;      /* Point array size */
+  INT (*Edges)[2]; /* Edges array - array of point pairs */
+  INT NumOfE;      /* Edges array size */
+} vg4PRIM;
+
+/* Setup projection function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+VOID VG4_RndSetProj( VOID );
+
+/* Primitive draw function.
+ * ARGUMENTS:
+ *   - primtive to draw:
+ *       vg4PRIM *Pr;
+ * RETURNS: None.
+ */
+VOID VG4_RndPrimDraw( vg4PRIM *Pr );
 
 #endif /* __ANIM_H_ */
 

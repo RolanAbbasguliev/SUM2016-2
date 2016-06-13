@@ -54,6 +54,15 @@ VOID VG4_AnimInit( HWND hWnd )
   QueryPerformanceCounter(&t);
   VG4_StartTime = VG4_OldTime = VG4_OldTimeFPS = t.QuadPart;
   VG4_PauseTime = 0;
+
+  /* Render setup */
+  VG4_RndMatrWorld = MatrIdentity();
+  VG4_RndMatrView = MatrView(VecSet(5, 5, 5), VecSet(0, 0, 0), VecSet(0, 1, 0));
+  VG4_RndMatrProj = MatrFrustum(-1, 1, -1, 1, 1, 100);
+
+  VG4_RndProjDist = 1;
+  VG4_RndFarClip = 500;
+  VG4_RndProjSize = 1;
 } /* End of 'VG4_AnimInit' function */
 
 /* Animation system deinitialization function.
@@ -101,6 +110,8 @@ VOID VG4_AnimResize( INT W, INT H )
   ReleaseDC(VG4_Anim.hWnd, hDC);
 
   SelectObject(VG4_Anim.hDC, VG4_Anim.hFrame);
+
+  VG4_RndSetProj();
 } /* End of 'VG4_AnimClose' function */
 
 /* Animation system resize window handle function.
