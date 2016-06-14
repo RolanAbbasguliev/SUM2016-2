@@ -206,6 +206,25 @@ VOID VG4_RndSetProj( VOID );
  */
 VOID VG4_RndPrimDraw( vg4PRIM *Pr );
 
+/* Load primitive from '*.g3d' file function.
+ * ARGUMENTS:
+ *   - primitive structure pointer:
+ *       vg4PRIM *Pr;
+ *   - file name:
+ *       CHAR *FileName;
+ * RETURNS:
+ *   (BOOL) TRUE is success, FALSE otherwise.
+ */
+BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName );
+
+/* Primitive free function.
+ * ARGUMENTS:
+ *   - primtive to free:
+ *       vg4PRIM *Pr;
+ * RETURNS: None.
+ */
+VOID VG4_RndPrimFree( vg4PRIM *Pr );
+
 #endif /* __ANIM_H_ */
 
 /* END OF 'ANIM.H' FILE */

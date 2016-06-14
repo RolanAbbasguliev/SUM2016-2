@@ -186,6 +186,9 @@ VOID VG4_AnimRender( VOID )
   VG4_Anim.Mdy = pt.y - VG4_Anim.My;
   VG4_Anim.Mx = pt.x;
   VG4_Anim.My = pt.y;
+  VG4_Anim.Mz += VG4_MouseWheel;
+  VG4_Anim.Mdz = VG4_MouseWheel;
+  VG4_MouseWheel = 0;
 
   /* Joystick */
   if (joyGetNumDevs() > 0)

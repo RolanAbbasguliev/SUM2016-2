@@ -28,52 +28,57 @@ extern DBL MultiplierDegree2Radian;
 /* Space vector representation type */
 typedef struct tagVEC
 {
-  DBL X, Y, Z; /* Vector components */
+  FLT X, Y, Z; /* Vector components */
 } VEC;
+
+/* Plane vector representation type */
+typedef struct tagVEC2
+{
+  FLT X, Y; /* Vector components */
+} VEC2;
 
 /* Space 4 components vector representation type */
 typedef struct tagVEC4
 {
-  VEC V; /* Vector part */
-  DBL W; /* 'w' homogenius components */
+  FLT X, Y, Z, W; /* Homogenius components */
 } VEC4;
 
 /* Transformation matrix representation type */
 typedef struct tagMATR
 {
-  DBL A[4][4]; /* Matrix elements */
+  FLT A[4][4]; /* Matrix elements */
 } MATR;
 
 /* Color representation type */
 typedef struct tagCOLOR
 {
-  DBL R, G, B, A; /* color components (+ alpha channel [0..1]) */
+  FLT R, G, B, A; /* color components (+ alpha channel [0..1]) */
 } COLOR;
 
 /* Color (3 components) representation type */
 typedef struct tagCOLOR3
 {
-  DBL R, G, B; /* color components [0..1] */
+  FLT R, G, B; /* color components [0..1] */
 } COLOR3;
 
 /* Random number obtain in range [0.0 .. 1.0] function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (DBL) result random number.
+ *   (FLT) result random number.
  */
-__inline DBL Rnd0( VOID )
+__inline FLT Rnd0( VOID )
 {
-  return (DBL)rand() / RAND_MAX;
+  return (FLT)rand() / RAND_MAX;
 } /* End of 'Rnd0' function */
 
 /* Random number obtain in range [-1.0 .. 1.0] function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (DBL) result random number.
+ *   (FLT) result random number.
  */
-__inline DBL Rnd1( VOID )
+__inline FLT Rnd1( VOID )
 {
-  return 2.0 * rand() / RAND_MAX - 1;
+  return 2.0f * rand() / RAND_MAX - 1;
 } /* End of 'Rnd1' function */
 
 /***
@@ -83,11 +88,11 @@ __inline DBL Rnd1( VOID )
 /* Construct color function.
  * ARGUMENTS:
  *   - color components:
- *       DBL R, G, B, A;
+ *       FLT R, G, B, A;
  * RETURNS:
  *   (COLOR) constructed structure.
  */
-__inline COLOR ColorSet( DBL R, DBL G, DBL B, DBL A )
+__inline COLOR ColorSet( FLT R, FLT G, FLT B, FLT A )
 {
   COLOR c = {R, G, B, A};
 
@@ -97,11 +102,11 @@ __inline COLOR ColorSet( DBL R, DBL G, DBL B, DBL A )
 /* Construct 3 components color function.
  * ARGUMENTS:
  *   - color components:
- *       DBL R, G, B;
+ *       FLT R, G, B;
  * RETURNS:
  *   (COLOR) constructed structure.
  */
-__inline COLOR3 Color3Set( DBL R, DBL G, DBL B )
+__inline COLOR3 Color3Set( FLT R, FLT G, FLT B )
 {
   COLOR3 c = {R, G, B};
 
@@ -113,11 +118,11 @@ __inline COLOR3 Color3Set( DBL R, DBL G, DBL B )
  *   - source color:
  *       COLOR C;
  * RETURNS:
- *   (DBL) monochrome value.
+ *   (FLT) monochrome value.
  */
-__inline DBL ColorMono( COLOR C )
+__inline FLT ColorMono( COLOR C )
 {
-  return C.R * 0.30 + C.G * 0.59 + C.B * 0.11;
+  return C.R * 0.30f + C.G * 0.59f + C.B * 0.11f;
 } /* End of 'ColorMono' function */
 
 /***
@@ -127,11 +132,11 @@ __inline DBL ColorMono( COLOR C )
 /* Construct vector function.
  * ARGUMENTS:
  *   - vertor coordinates:
- *       DBL X, Y, Z;
+ *       FLT X, Y, Z;
  * RETURNS:
  *   (VEC) constructed structure.
  */
-__inline VEC VecSet( DBL X, DBL Y, DBL Z )
+__inline VEC VecSet( FLT X, FLT Y, FLT Z )
 {
   VEC v;
 
@@ -144,18 +149,16 @@ __inline VEC VecSet( DBL X, DBL Y, DBL Z )
 /* Construct 4 components vector function.
  * ARGUMENTS:
  *   - vertor Cartesian coordinates:
- *       VEC V;
+ *       FLT X, Y, Z;
  *   - vertor 'w' coordinate:
- *       DBL W;
+ *       FLT W;
  * RETURNS:
  *   (VEC4) constructed structure.
  */
-__inline VEC4 Vec4Set( VEC V, DBL W )
+__inline VEC4 Vec4Set( FLT X, FLT Y, FLT Z, FLT W )
 {
-  VEC4 v;
+  VEC4 v = {X, Y, Z, W};
 
-  v.V = V;
-  v.W = W;
   return v;
 } /* End of 'Vec4Set' function */
 
@@ -188,11 +191,11 @@ __inline VEC VecSubVec( VEC V1, VEC V2 )
  *   - vector to be multiply:
  *       VEC V;
  *   - number to be multiply:
- *       DBL N;
+ *       FLT N;
  * RETURNS:
  *   (VEC) result vector.
  */
-__inline VEC VecMulNum( VEC V, DBL N )
+__inline VEC VecMulNum( VEC V, FLT N )
 {
   return VecSet(V.X * N, V.Y * N, V.Z * N);
 } /* End of 'VecMulNum' function */
@@ -202,11 +205,11 @@ __inline VEC VecMulNum( VEC V, DBL N )
  *   - vector to be divided:
  *       VEC V;
  *   - number to be divide by:
- *       DBL N;
+ *       FLT N;
  * RETURNS:
  *   (VEC) result vector.
  */
-__inline VEC VecDivNum( VEC V1, DBL N )
+__inline VEC VecDivNum( VEC V1, FLT N )
 {
   return VecSet(V1.X / N, V1.Y / N, V1.Z / N);
 } /* End of 'VecDivNum' function */
@@ -228,9 +231,9 @@ __inline VEC VecNeg( VEC V )
  *   - producted vectors:
  *       VEC V1, V2;
  * RETURNS:
- *   (DBL) result number.
+ *   (FLT) result number.
  */
-__inline DBL VecDotVec( VEC V1, VEC V2 )
+__inline FLT VecDotVec( VEC V1, VEC V2 )
 {
   return V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z;
 } /* End of 'VecDotVec' function */
@@ -254,9 +257,9 @@ __inline VEC VecCrossVec( VEC V1, VEC V2 )
  *   - source vector:
  *       VEC V;
  * RETURNS:
- *   (DBL) result number.
+ *   (FLT) result number.
  */
-__inline DBL VecLen2( VEC V )
+__inline FLT VecLen2( VEC V )
 {
   return V.X * V.X + V.Y * V.Y + V.Z * V.Z;
 } /* End of 'VecLen2' function */
@@ -266,14 +269,14 @@ __inline DBL VecLen2( VEC V )
  *   - source vector:
  *       VEC V;
  * RETURNS:
- *   (DBL) result number.
+ *   (FLT) result number.
  */
-__inline DBL VecLen( VEC V )
+__inline FLT VecLen( VEC V )
 {
-  DBL len = V.X * V.X + V.Y * V.Y + V.Z * V.Z;
+  FLT len = V.X * V.X + V.Y * V.Y + V.Z * V.Z;
 
   if (len != 0 && len != 1)
-    return sqrt(len);
+    return sqrtf(len);
   return len;
 } /* End of 'VecLen' function */
 
@@ -286,10 +289,10 @@ __inline DBL VecLen( VEC V )
  */
 __inline VEC VecNormalize( VEC V )
 {
-  DBL len = V.X * V.X + V.Y * V.Y + V.Z * V.Z;
+  FLT len = V.X * V.X + V.Y * V.Y + V.Z * V.Z;
 
   if (len != 0 && len != 1)
-    return len = sqrt(len), VecSet(V.X / len, V.Y / len,  V.Z / len);
+    return len = sqrtf(len), VecSet(V.X / len, V.Y / len,  V.Z / len);
   return V;
 } /* End of 'VecNormalize' function */
 
@@ -304,7 +307,7 @@ __inline VEC VecNormalize( VEC V )
  */
 __inline VEC VecMulMatr( VEC V, MATR M )
 {
-  DBL w = V.X * M.A[0][3] + V.Y * M.A[1][3] + V.Z * M.A[2][3] + M.A[3][3];
+  FLT w = V.X * M.A[0][3] + V.Y * M.A[1][3] + V.Z * M.A[2][3] + M.A[3][3];
 
   return VecSet((V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0] + M.A[3][0]) / w,
                 (V.X * M.A[0][1] + V.Y * M.A[1][1] + V.Z * M.A[2][1] + M.A[3][1]) / w,
@@ -417,13 +420,13 @@ __inline MATR MatrScale( VEC Sv )
 /* Rotation around X axis transformation matrix setup function.
  * ARGUMENTS:
  *   - rotation ange in degrees:
- *       DBL AngleInDegree;
+ *       FLT AngleInDegree;
  * RETURNS:
  *   (MATR) result matrix.
  */
-__inline MATR MatrRotateX( DBL AngleInDegree )
+__inline MATR MatrRotateX( FLT AngleInDegree )
 {
-  DBL sine, cosine;
+  FLT sine, cosine;
   MATR m = VG4_UNIT_MATR;
 
   __asm {
@@ -447,13 +450,13 @@ __inline MATR MatrRotateX( DBL AngleInDegree )
 /* Rotation around Y axis transformation matrix setup function.
  * ARGUMENTS:
  *   - rotation ange in degrees:
- *       DBL AngleInDegree;
+ *       FLT AngleInDegree;
  * RETURNS:
  *   (MATR) result matrix.
  */
-__inline MATR MatrRotateY( DBL AngleInDegree )
+__inline MATR MatrRotateY( FLT AngleInDegree )
 {
-  DBL sine, cosine;
+  FLT sine, cosine;
   MATR m = VG4_UNIT_MATR;
 
   __asm {
@@ -477,13 +480,13 @@ __inline MATR MatrRotateY( DBL AngleInDegree )
 /* Rotation around Z axis transformation matrix setup function.
  * ARGUMENTS:
  *   - rotation ange in degrees:
- *       DBL AngleInDegree;
+ *       FLT AngleInDegree;
  * RETURNS:
  *   (MATR) result matrix.
  */
-__inline MATR MatrRotateZ( DBL AngleInDegree )
+__inline MATR MatrRotateZ( FLT AngleInDegree )
 {
-  DBL sine, cosine;
+  FLT sine, cosine;
   MATR m = VG4_UNIT_MATR;
 
   __asm {
@@ -507,15 +510,15 @@ __inline MATR MatrRotateZ( DBL AngleInDegree )
 /* Rotation around arbitrary radius-vector transformation matrix setup function.
  * ARGUMENTS:
  *   - rotation ange in degrees:
- *       DBL AngleInDegree;
+ *       FLT AngleInDegree;
  *   - vector rotate around:
  *       VEC R;
  * RETURNS:
  *   (MATR) result matrix.
  */
-__inline MATR MatrRotate( DBL AngleInDegree, VEC R )
+__inline MATR MatrRotate( FLT AngleInDegree, VEC R )
 {
-  DBL sine, cosine;
+  FLT sine, cosine;
   MATR m;
 
   __asm {
@@ -612,15 +615,15 @@ __inline MATR MatrTranspose( MATR M )
 /* Matrix 3x3 determinant obtain function.
  * ARGUMENTS:
  *   - matrix elements:
- *       DBL A11, A12, A13,
+ *       FLT A11, A12, A13,
  *           A21, A22, A23,
  *           A31, A32, A33;
  * RETURNS:
- *   (DBL) determinant value.
+ *   (FLT) determinant value.
  */
-__inline DBL MatrDeterm3x3( DBL A11, DBL A12, DBL A13,
-                            DBL A21, DBL A22, DBL A23,
-                            DBL A31, DBL A32, DBL A33 )
+__inline FLT MatrDeterm3x3( FLT A11, FLT A12, FLT A13,
+                            FLT A21, FLT A22, FLT A23,
+                            FLT A31, FLT A32, FLT A33 )
 {
   return A11 * A22 * A33 -
          A11 * A23 * A32 -
@@ -635,9 +638,9 @@ __inline DBL MatrDeterm3x3( DBL A11, DBL A12, DBL A13,
  *   - source matrix:
  *       MATR M;
  * RETURNS:
- *   (DBL) determinant value.
+ *   (FLT) determinant value.
  */
-__inline DBL MatrDeterm( MATR M )
+__inline FLT MatrDeterm( MATR M )
 {
   return
     M.A[0][0] * MatrDeterm3x3(M.A[1][1], M.A[1][2], M.A[1][3],
@@ -664,7 +667,7 @@ __inline DBL MatrDeterm( MATR M )
 __inline MATR MatrInverse( MATR M )
 {
   MATR r;
-  DBL det = MatrDeterm(M);
+  FLT det = MatrDeterm(M);
 
   if (det == 0)
   {
@@ -774,11 +777,11 @@ __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
 /* Orthographics projection matrix setup function.
  * ARGUMENTS:
  *   - orthographic box side facets coordinates:
- *       DBL Left, Right, Bottom, Top, Near, Far;
+ *       FLT Left, Right, Bottom, Top, Near, Far;
  * RETURNS:
  *   (MATR) result matrix.
  */
-__inline MATR MatrOrtho( DBL Left, DBL Right, DBL Bottom, DBL Top, DBL Near, DBL Far )
+__inline MATR MatrOrtho( FLT Left, FLT Right, FLT Bottom, FLT Top, FLT Near, FLT Far )
 {
   MATR m =
   {
@@ -796,11 +799,11 @@ __inline MATR MatrOrtho( DBL Left, DBL Right, DBL Bottom, DBL Top, DBL Near, DBL
 /* Perspective (frustum) projection matrix setup function.
  * ARGUMENTS:
  *   - frustum side facets coordinates:
- *       DBL Left, Right, Bottom, Top, Near, Far;
+ *       FLT Left, Right, Bottom, Top, Near, Far;
  * RETURNS:
  *   (MATR) result matrix.
  */
-__inline MATR MatrFrustum( DBL Left, DBL Right, DBL Bottom, DBL Top, DBL Near, DBL Far )
+__inline MATR MatrFrustum( FLT Left, FLT Right, FLT Bottom, FLT Top, FLT Near, FLT Far )
 {
   MATR m =
   {

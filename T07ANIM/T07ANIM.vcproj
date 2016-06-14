@@ -198,6 +198,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\LOADPRIM.C"
+					>
+				</File>
+				<File
 					RelativePath=".\RENDER.C"
 					>
 				</File>

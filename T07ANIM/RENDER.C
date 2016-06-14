@@ -78,4 +78,19 @@ VOID VG4_RndPrimDraw( vg4PRIM *Pr )
   free(pts);
 } /* End of 'VG4_RndPrimDraw' function */
 
+/* Primitive free function.
+ * ARGUMENTS:
+ *   - primtive to free:
+ *       vg4PRIM *Pr;
+ * RETURNS: None.
+ */
+VOID VG4_RndPrimFree( vg4PRIM *Pr )
+{
+  if (Pr->P != NULL)
+    free(Pr->P);
+  if (Pr->Edges != NULL)
+    free(Pr->Edges);
+  memset(Pr, 0, sizeof(vg4PRIM));
+} /* End of 'VG4_RndPrimFree' function */
+
 /* END OF 'RENDER.C' FILE */
