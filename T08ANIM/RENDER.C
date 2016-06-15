@@ -18,6 +18,9 @@ DBL
   VG4_RndFarClip,  /* Far clip plane */
   VG4_RndProjSize; /* Project plane size */
 
+/* Shader support */
+UINT VG4_RndPrg;
+
 /* Setup projection function.
  * ARGUMENTS: None.
  * RETURNS: None.
@@ -46,7 +49,7 @@ VOID VG4_RndSetProj( VOID )
  */
 VOID VG4_RndPrimDraw( vg4PRIM *Pr )
 {
-  INT i;
+  INT loc;
   MATR M;
 
   /* Build transform matrix */
@@ -54,14 +57,26 @@ VOID VG4_RndPrimDraw( vg4PRIM *Pr )
     MatrMulMatr(VG4_RndMatrView, VG4_RndMatrProj));
   glLoadMatrixf(M.A[0]);
 
-  /* Draw all lines */
-  glBegin(GL_TRIANGLES);
-  for (i = 0; i < Pr->NumOfI; i++)
-  {
-    glColor3fv(&Pr->V[Pr->I[i]].C.X);
-    glVertex3fv(&Pr->V[Pr->I[i]].P.X);
-  }
-  glEnd();
+  glUseProgram(VG4_RndPrg);
+
+  /* Setup global variables */
+  if ((loc = glGetUniformLocation(VG4_RndPrg, "MatrWorld")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, VG4_RndMatrWorld.A[0]);
+  if ((loc = glGetUniformLocation(VG4_RndPrg, "MatrView")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, VG4_RndMatrView.A[0]);
+  if ((loc = glGetUniformLocation(VG4_RndPrg, "MatrProj")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, VG4_RndMatrProj.A[0]);
+  if ((loc = glGetUniformLocation(VG4_RndPrg, "Time")) != -1)
+    glUniform1f(loc, VG4_Anim.Time);
+
+
+  /* Activete primitive vertex array */
+  glBindVertexArray(Pr->VA);
+  /* Activete primitive index buffer */
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+  /* Draw primitive */
+  glDrawElements(GL_TRIANGLES, Pr->NumOfI, GL_UNSIGNED_INT, NULL);
+  glUseProgram(0);
 } /* End of 'VG4_RndPrimDraw' function */
 
 /* Primitive free function.
@@ -72,10 +87,12 @@ VOID VG4_RndPrimDraw( vg4PRIM *Pr )
  */
 VOID VG4_RndPrimFree( vg4PRIM *Pr )
 {
-  if (Pr->V != NULL)
-    free(Pr->V);
-  if (Pr->I != NULL)
-    free(Pr->I);
+  glBindVertexArray(Pr->VA);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &Pr->VBuf);
+  glBindVertexArray(0);
+  glDeleteVertexArrays(1, &Pr->VA);
+  glDeleteBuffers(1, &Pr->IBuf);
   memset(Pr, 0, sizeof(vg4PRIM));
 } /* End of 'VG4_RndPrimFree' function */
 

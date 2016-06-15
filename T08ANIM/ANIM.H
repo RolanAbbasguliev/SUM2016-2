@@ -182,6 +182,9 @@ extern DBL
   VG4_RndFarClip,  /* Far clip plane */
   VG4_RndProjSize; /* Project plane size */
 
+/* Shader support */
+extern UINT VG4_RndPrg;
+
 /* Vertex representation type */
 typedef struct
 {
@@ -194,9 +197,11 @@ typedef struct
 /* Primitive representation type */
 typedef struct
 {
-  vg4VERTEX *V;     /* Primitive vertex array */
-  INT NumOfV;       /* Point array size */
-  INT *I;           /* Facets index array */
+  /* OpenGL buffers */
+  INT
+    VA,   /* Vertex array */
+    VBuf, /* Vertex buffer */
+    IBuf; /* Index buffer */
   INT NumOfI;       /* Facets index array size */
 } vg4PRIM;
 
@@ -232,6 +237,23 @@ BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName );
  * RETURNS: None.
  */
 VOID VG4_RndPrimFree( vg4PRIM *Pr );
+
+/* Shader program load function.
+ * ARGUMENTS:
+ *   - shader files prefix:
+ *       CHAR *FileNamePrefix;
+ * RETURNS:
+ *   (UINT) shader program index or 0 if error is occured.
+ */
+UINT VG4_RndShaderLoad( CHAR *FileNamePrefix );
+
+/* Shader program load function.
+ * ARGUMENTS:
+ *   - shader program Id:
+ *       UINT Prg;
+ * RETURNS: None.
+ */
+VOID VG4_RndShaderFree( UINT Prg );
 
 #endif /* __ANIM_H_ */
 

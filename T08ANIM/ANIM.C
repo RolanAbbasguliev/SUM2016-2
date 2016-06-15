@@ -94,6 +94,8 @@ VOID VG4_AnimInit( HWND hWnd )
   glClearColor(0.3, 0.5, 0.7, 1);
   glEnable(GL_DEPTH_TEST);
   /* glPolygonMode(GL_FRONT, GL_LINE); */
+
+  VG4_RndPrg = VG4_RndShaderLoad("a");
 } /* End of 'VG4_AnimInit' function */
 
 /* Animation system deinitialization function.
@@ -103,6 +105,8 @@ VOID VG4_AnimInit( HWND hWnd )
 VOID VG4_AnimClose( VOID )
 {
   INT i;
+
+  VG4_RndShaderFree(VG4_RndPrg);
 
   /* Destroy all units */
   for (i = 0; i < VG4_Anim.NumOfUnits; i++)
@@ -157,6 +161,7 @@ VOID VG4_AnimRender( VOID )
   INT i;
   POINT pt;
   LARGE_INTEGER t;
+  static DBL ShaderTime;
 
   /*** Handle timer ***/
   VG4_FrameCounter++;
@@ -182,7 +187,7 @@ VOID VG4_AnimRender( VOID )
 
     VG4_Anim.FPS = VG4_FrameCounter * VG4_TimePerSec / (DBL)(t.QuadPart - VG4_OldTimeFPS);
     VG4_OldTimeFPS = t.QuadPart;
-    sprintf(str, "FPS: %.5f", VG4_Anim.FPS);
+    sprintf(str, "FPS: %.5f (%i units)", VG4_Anim.FPS, VG4_Anim.NumOfUnits);
     SetWindowText(VG4_Anim.hWnd, str);
     VG4_FrameCounter = 0;
   }
@@ -260,6 +265,16 @@ VOID VG4_AnimRender( VOID )
 
   /* Finalize OpenGL drawing */
   glFinish();
+
+  /* Update shaders */
+  ShaderTime += VG4_Anim.GlobalDeltaTime;
+  if (ShaderTime > 3)
+  {
+    ShaderTime = 0;
+
+    VG4_RndShaderFree(VG4_RndPrg);
+    VG4_RndPrg = VG4_RndShaderLoad("a");
+  }
 } /* End of 'VG4_AnimRender' function */
 
 /* Add new unit to animation system function.

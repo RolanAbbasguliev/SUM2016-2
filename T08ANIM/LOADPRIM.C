@@ -28,6 +28,8 @@ BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName )
   INT NumOfI;
   CHAR Mtl[300];
   INT p;
+  vg4VERTEX *V;
+  INT *I;
 
   memset(Pr, 0, sizeof(vg4PRIM));
 
@@ -71,31 +73,65 @@ BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName )
     fread(Mtl, 1, 300, F);
 
     /* Allocate memory for primitive */
-    if ((Pr->V = malloc(sizeof(vg4VERTEX) * NumOfP)) == NULL)
+    if ((V = malloc(sizeof(vg4VERTEX) * NumOfP)) == NULL)
     {
       fclose(F);
       return FALSE;
     }
-    if ((Pr->I = malloc(sizeof(INT) * NumOfI)) == NULL)
+    if ((I = malloc(sizeof(INT) * NumOfI)) == NULL)
     {
-      free(Pr->V);
-      Pr->V = NULL;
+      free(V);
+      V = NULL;
       fclose(F);
       return FALSE;
     }
-    Pr->NumOfV = NumOfP;
     Pr->NumOfI = NumOfI;
-    fread(Pr->V, sizeof(vg4VERTEX), NumOfP, F);
-    fread(Pr->I, sizeof(INT), NumOfI, F);
-    if (Pr->NumOfV > 0)
-    {
-      INT i;
+    fread(V, sizeof(vg4VERTEX), NumOfP, F);
+    fread(I, sizeof(INT), NumOfI, F);
 
-      for (i = 0; i < Pr->NumOfV; i++)
-        Pr->V[i].C = Vec4Set(Pr->V[i].N.X / 2 + 0.5,
-                             Pr->V[i].N.Y / 2 + 0.5,
-                             Pr->V[i].N.Z / 2 + 0.5, 1); /* Vec4Set(Rnd0(), Rnd0(), Rnd0(), 1); */
-    }
+    /* Create OpenGL buffers */
+    glGenVertexArrays(1, &Pr->VA);
+    glGenBuffers(1, &Pr->VBuf);
+    glGenBuffers(1, &Pr->IBuf);
+
+    /* Activate vertex array */
+    glBindVertexArray(Pr->VA);
+    /* Activate vertex buffer */
+    glBindBuffer(GL_ARRAY_BUFFER, Pr->VBuf);
+    /* Store vertex data */
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vg4VERTEX) * NumOfP, V, GL_STATIC_DRAW);
+
+    /* Setup data order */
+    /*                    layout,
+     *                      components count,
+     *                          type
+     *                                    should be normalize,
+     *                                           vertex structure size in bytes (stride),
+     *                                               offset in bytes to field start */
+    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
+                          (VOID *)0); /* position */
+    glVertexAttribPointer(1, 2, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
+                          (VOID *)sizeof(VEC)); /* texture coordinates */
+    glVertexAttribPointer(2, 3, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
+                          (VOID *)(sizeof(VEC) + sizeof(VEC2))); /* normal */
+    glVertexAttribPointer(3, 4, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
+                          (VOID *)(sizeof(VEC) * 2 + sizeof(VEC2))); /* color */
+
+    /* Enable used attributes */
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+
+    /* Indices */
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INT) * NumOfI, I, GL_STATIC_DRAW);
+
+    /* Disable vertex array */
+    glBindVertexArray(0);
+
+    free(V);
+    free(I);
     break;
   }
   fclose(F);
