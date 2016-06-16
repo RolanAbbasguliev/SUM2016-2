@@ -46,7 +46,7 @@ BOOL VG4_ImageLoad( vg4IMG *Im, CHAR *FileName )
   bmih.biPlanes = 1;                      /* always */
   bmih.biCompression = BI_RGB;            /* 0 - no compression */
   bmih.biWidth = bm.bmWidth;              /* width */
-  bmih.biHeight = -bm.bmHeight;           /* height + first coded row is 0 */
+  bmih.biHeight = bm.bmHeight;           /* height + first coded row is 0 */
   bmih.biSizeImage = bm.bmWidth * bm.bmHeight * 4;  /* image size in bytes */
 
   Im->hImage = CreateDIBSection(NULL, (BITMAPINFO *)&bmih, DIB_RGB_COLORS,

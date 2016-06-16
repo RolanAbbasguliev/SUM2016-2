@@ -49,7 +49,7 @@ static VOID VG4_UnitResponse( vg4UNIT_CONTROL *Uni, vg4ANIM *Ani )
     glPolygonMode(GL_BACK, GL_LINE);
   if (Ani->Keys[VK_SPACE])
     VG4_AnimAddUnit(VG4_UnitCreateBall());
-  if (Ani->Keys['C'])
+  if (Ani->KeysClick['C'])
     VG4_AnimAddUnit(VG4_UnitCreateCube());
   if (Ani->KeysClick[VK_RETURN] && Ani->Keys[VK_MENU])
     VG4_AnimFlipFullScreen();
@@ -72,7 +72,7 @@ static VOID VG4_UnitResponse( vg4UNIT_CONTROL *Uni, vg4ANIM *Ani )
   Uni->Pos = VecMulMatr43(Uni->Pos, MatrRotateY(-59 * Ani->Keys[VK_LEFT] * Ani->GlobalDeltaTime));
 
   r = VecLen(Uni->Pos);
-  Uni->Pos = VecMulNum(Uni->Pos, (r + Ani->Mdz * Ani->DeltaTime * 0.1) / r);
+  Uni->Pos = VecMulNum(Uni->Pos, (r + Ani->Mdz * Ani->GlobalDeltaTime * 0.1) / r);
 
   VG4_RndMatrView = MatrView(Uni->Pos, VecSet(0, 0, 0), VecSet(0, 1, 0));
 } /* End of 'VG4_UnitResponse' function */

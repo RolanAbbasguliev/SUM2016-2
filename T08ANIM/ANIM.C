@@ -94,6 +94,8 @@ VOID VG4_AnimInit( HWND hWnd )
   glClearColor(0.3, 0.5, 0.7, 1);
   glEnable(GL_DEPTH_TEST);
   /* glPolygonMode(GL_FRONT, GL_LINE); */
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   VG4_RndPrg = VG4_RndShaderLoad("a");
 } /* End of 'VG4_AnimInit' function */

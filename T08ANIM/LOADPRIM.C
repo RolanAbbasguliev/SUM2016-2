@@ -9,29 +9,29 @@
 
 #include "anim.h"
 
-/* Load primitive from '*.g3d' file function.
+/* Load object from '*.g3d' file function.
  * ARGUMENTS:
- *   - primitive structure pointer:
- *       vg4PRIM *Pr;
+ *   - object structure pointer:
+ *       vg4OBJ *Obj;
  *   - file name:
  *       CHAR *FileName;
  * RETURNS:
  *   (BOOL) TRUE is success, FALSE otherwise.
  */
-BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName )
+BOOL VG4_RndObjLoad( vg4OBJ *Obj, CHAR *FileName )
 {
   FILE *F;
   DWORD Sign;
   INT NumOfPrimitives;
   CHAR MtlFile[300];
-  INT NumOfP;
+  INT NumOfV;
   INT NumOfI;
   CHAR Mtl[300];
   INT p;
   vg4VERTEX *V;
   INT *I;
 
-  memset(Pr, 0, sizeof(vg4PRIM));
+  memset(Obj, 0, sizeof(vg4OBJ));
 
   F = fopen(FileName, "rb");
   if (F == NULL)
@@ -42,10 +42,10 @@ BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName )
    *   4b NumOfPrimitives       INT NumOfPrimitives;
    *   300b material file name: CHAR MtlFile[300];
    *   repeated NumOfPrimitives times:
-   *     4b INT NumOfP; - vertex count
+   *     4b INT NumOfV; - vertex count
    *     4b INT NumOfI; - index (triangles * 3) count
    *     300b material name: CHAR Mtl[300];
-   *     repeat NumOfP times - vertices:
+   *     repeat NumOfV times - vertices:
    *         !!! float point -> FLT
    *       typedef struct
    *       {
@@ -65,41 +65,58 @@ BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName )
   }
   fread(&NumOfPrimitives, 4, 1, F);
   fread(MtlFile, 1, 300, F);
+  VG4_RndLoadMaterials(MtlFile);
+
+  /* Allocate mnemory for primitives */
+  if ((Obj->Prims = malloc(sizeof(vg4PRIM) * NumOfPrimitives)) == NULL)
+  {
+    fclose(F);
+    return FALSE;
+  }
+  Obj->NumOfPrims = NumOfPrimitives;
+
   for (p = 0; p < NumOfPrimitives; p++)
   {
     /* Read primitive info */
-    fread(&NumOfP, 4, 1, F);
+    fread(&NumOfV, 4, 1, F);
     fread(&NumOfI, 4, 1, F);
     fread(Mtl, 1, 300, F);
 
     /* Allocate memory for primitive */
-    if ((V = malloc(sizeof(vg4VERTEX) * NumOfP)) == NULL)
+    if ((V = malloc(sizeof(vg4VERTEX) * NumOfV + sizeof(INT) * NumOfI)) == NULL)
     {
+      while (p-- > 0)
+      {
+        glBindVertexArray(Obj->Prims[p].VA);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glDeleteBuffers(1, &Obj->Prims[p].VBuf);
+        glBindVertexArray(0);
+        glDeleteVertexArrays(1, &Obj->Prims[p].VA);
+        glDeleteBuffers(1, &Obj->Prims[p].IBuf);
+      }
+      free(Obj->Prims);
+      memset(Obj, 0, sizeof(vg4OBJ));
       fclose(F);
       return FALSE;
     }
-    if ((I = malloc(sizeof(INT) * NumOfI)) == NULL)
-    {
-      free(V);
-      V = NULL;
-      fclose(F);
-      return FALSE;
-    }
-    Pr->NumOfI = NumOfI;
-    fread(V, sizeof(vg4VERTEX), NumOfP, F);
+    I = (INT *)(V + NumOfV);
+    Obj->Prims[p].NumOfI = NumOfI;
+    Obj->Prims[p].M = MatrIdentity();
+    Obj->Prims[p].MtlNo = VG4_RndFindMaterial(Mtl);
+    fread(V, sizeof(vg4VERTEX), NumOfV, F);
     fread(I, sizeof(INT), NumOfI, F);
 
     /* Create OpenGL buffers */
-    glGenVertexArrays(1, &Pr->VA);
-    glGenBuffers(1, &Pr->VBuf);
-    glGenBuffers(1, &Pr->IBuf);
+    glGenVertexArrays(1, &Obj->Prims[p].VA);
+    glGenBuffers(1, &Obj->Prims[p].VBuf);
+    glGenBuffers(1, &Obj->Prims[p].IBuf);
 
     /* Activate vertex array */
-    glBindVertexArray(Pr->VA);
+    glBindVertexArray(Obj->Prims[p].VA);
     /* Activate vertex buffer */
-    glBindBuffer(GL_ARRAY_BUFFER, Pr->VBuf);
+    glBindBuffer(GL_ARRAY_BUFFER, Obj->Prims[p].VBuf);
     /* Store vertex data */
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vg4VERTEX) * NumOfP, V, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vg4VERTEX) * NumOfV, V, GL_STATIC_DRAW);
 
     /* Setup data order */
     /*                    layout,
@@ -124,18 +141,16 @@ BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName )
     glEnableVertexAttribArray(3);
 
     /* Indices */
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Obj->Prims[p].IBuf);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INT) * NumOfI, I, GL_STATIC_DRAW);
 
     /* Disable vertex array */
     glBindVertexArray(0);
 
     free(V);
-    free(I);
-    break;
   }
   fclose(F);
   return TRUE;
-} /* End of 'VG4_RndPrimLoad' function */
+} /* End of 'VG4_RndObjLoad' function */
 
 /* END OF 'LOADPRIM.C' FILE */

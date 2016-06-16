@@ -170,21 +170,6 @@ vg4UNIT * VG4_AnimUnitCreate( INT Size );
  * Render support
  ***/
 
-/* Global transformation matrices */
-extern MATR
-  VG4_RndMatrWorld, /* World (object) transformation matrix */
-  VG4_RndMatrView,  /* Camera view transform */
-  VG4_RndMatrProj;  /* Projection transform */
-
-/* Projection parameters */
-extern DBL
-  VG4_RndProjDist, /* Near clip plane */
-  VG4_RndFarClip,  /* Far clip plane */
-  VG4_RndProjSize; /* Project plane size */
-
-/* Shader support */
-extern UINT VG4_RndPrg;
-
 /* Vertex representation type */
 typedef struct
 {
@@ -203,7 +188,46 @@ typedef struct
     VBuf, /* Vertex buffer */
     IBuf; /* Index buffer */
   INT NumOfI;       /* Facets index array size */
+  MATR M; /* Primitive transformation matrix */
+  INT MtlNo; /* Material number */
 } vg4PRIM;
+
+/* Object representation type */
+typedef struct
+{
+  vg4PRIM *Prims;
+  INT NumOfPrims;
+} vg4OBJ;
+
+/* Material representation type */
+typedef struct
+{
+  CHAR Name[300]; /* Material name */
+  VEC Ka, Kd, Ks; /* Illumination coefficients */
+  FLT Ph, Trans;  /* Shininess and Phong, transparency */
+  INT TexW, TexH; /* Textiure image size */
+  INT TexNo;      /* For load: bytes per pixel, in use: OpenGL texture no */
+} vg4MTL;
+
+/* Global transformation matrices */
+extern MATR
+  VG4_RndMatrWorld, /* World (object) transformation matrix */
+  VG4_RndMatrView,  /* Camera view transform */
+  VG4_RndMatrProj;  /* Projection transform */
+
+/* Projection parameters */
+extern DBL
+  VG4_RndProjDist, /* Near clip plane */
+  VG4_RndFarClip,  /* Far clip plane */
+  VG4_RndProjSize; /* Project plane size */
+
+/* Shader support */
+extern UINT VG4_RndPrg;
+
+/* Materials array */
+#define VG4_MAX_MATERIALS 10000
+extern vg4MTL VG4_RndMaterials[VG4_MAX_MATERIALS];
+extern INT VG4_RndNumOfMaterials;
 
 /* Setup projection function.
  * ARGUMENTS: None.
@@ -211,32 +235,49 @@ typedef struct
  */
 VOID VG4_RndSetProj( VOID );
 
-/* Primitive draw function.
+/* Object draw function.
  * ARGUMENTS:
- *   - primtive to draw:
- *       vg4PRIM *Pr;
+ *   - object structure pointer:
+ *       vg4OBJ *Obj;
  * RETURNS: None.
  */
-VOID VG4_RndPrimDraw( vg4PRIM *Pr );
+VOID VG4_RndObjDraw( vg4OBJ *Obj );
 
-/* Load primitive from '*.g3d' file function.
+/* Load object from '*.g3d' file function.
  * ARGUMENTS:
- *   - primitive structure pointer:
- *       vg4PRIM *Pr;
+ *   - object structure pointer:
+ *       vg4OBJ *Obj;
  *   - file name:
  *       CHAR *FileName;
  * RETURNS:
  *   (BOOL) TRUE is success, FALSE otherwise.
  */
-BOOL VG4_RndPrimLoad( vg4PRIM *Pr, CHAR *FileName );
+BOOL VG4_RndObjLoad( vg4OBJ *Obj, CHAR *FileName );
 
-/* Primitive free function.
+/* Object free function.
  * ARGUMENTS:
- *   - primtive to free:
- *       vg4PRIM *Pr;
+ *   - object structure pointer:
+ *       vg4OBJ *Obj;
  * RETURNS: None.
  */
-VOID VG4_RndPrimFree( vg4PRIM *Pr );
+VOID VG4_RndObjFree( vg4OBJ *Obj );
+
+/* Material find by name function.
+ * ARGUMENTS:
+ *   - material name:
+ *       CHAR *Name;
+ * RETURNS:
+ *   (INT) number of found material or -1 if no result.
+ */
+INT VG4_RndFindMaterial( CHAR *Name );
+
+/* Material load function.
+ * ARGUMENTS:
+ *   - material file name:
+ *       CHAR *FileName;
+ * RETURNS: None.
+*/
+VOID VG4_RndLoadMaterials( CHAR *FileName );
 
 /* Shader program load function.
  * ARGUMENTS:
