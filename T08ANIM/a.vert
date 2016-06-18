@@ -12,6 +12,9 @@ uniform mat4 MatrWorld;
 uniform mat4 MatrView;
 uniform mat4 MatrProj;
 
+uniform float Time;
+uniform int PartNo;
+
 // output data
 out vec4 DrawColor;
 out vec3 DrawPos;
@@ -20,9 +23,9 @@ out vec2 DrawTexCoord;
 
 void main( void )
 {
-  gl_Position = MatrProj * MatrView * MatrWorld * vec4(InPosition, 1);
+  gl_Position = MatrProj * MatrView * MatrWorld * vec4(InPosition.xzy, 1);
 
-  DrawColor = InColor * (InTexCoord.x + InTexCoord.y); //vec4(InNormal * 2, 1);
+  DrawColor = InColor; //vec4(InNormal * 2, 1);
   DrawPos = InPosition;
   DrawNormal = mat3(inverse(transpose(MatrWorld))) * InNormal;
   DrawTexCoord = InTexCoord;

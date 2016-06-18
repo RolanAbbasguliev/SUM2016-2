@@ -64,7 +64,7 @@ VOID VG4_RndObjDraw( vg4OBJ *Obj )
   {
     /* Build transform matrix */
     MSave = VG4_RndMatrWorld;
-    VG4_RndMatrWorld = MatrMulMatr(VG4_RndMatrWorld, Obj->Prims[i].M);
+    VG4_RndMatrWorld = MatrMulMatr(MatrMulMatr(VG4_RndMatrWorld, MatrTranslate(VecSet(0, 0, i * 0))), Obj->Prims[i].M);
     M = MatrMulMatr(VG4_RndMatrWorld,
       MatrMulMatr(VG4_RndMatrView, VG4_RndMatrProj));
     glLoadMatrixf(M.A[0]);

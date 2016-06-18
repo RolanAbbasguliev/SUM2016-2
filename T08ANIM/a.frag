@@ -55,6 +55,10 @@ vec3 Shade( vec3 N )
 void main( void )
 {
   /*
+  if (gl_FrontFacing)
+    discard;
+  */
+  /*
   if (DrawPos.z > 33.5 + 35 * sin(5 * Time))
     //discard;
     OutColor = vec4(1, 0, 0, 1);//DrawColor
@@ -73,5 +77,6 @@ void main( void )
   OutColor = 2 * nl * tc.rgba;
   OutColor = vec4(Ka + Kd * nl + Ks * 0, 1) + tc;
   */
-  OutColor = vec4(Shade(normalize(DrawNormal)), Trans);
+  OutColor = vec4(Shade(normalize(DrawNormal)) * 1, Trans);
+  OutColor = vec4(normalize(DrawNormal.zxy), Trans);
 }

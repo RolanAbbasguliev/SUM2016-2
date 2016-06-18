@@ -53,7 +53,7 @@ static VOID VG4_UnitInit( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
   Uni->TimerSpeed = Rnd1() * 8;
   Uni->Pos = VecSet(0, 0, 0);
 
-  VG4_RndObjLoad(&Uni->Cow, "models\\dodge.g3d");
+  VG4_RndObjLoad(&Uni->Cow, "models\\x6.g3d");
 
   /*
   switch (rand() % 5)
@@ -118,7 +118,7 @@ static VOID VG4_UnitRender( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
   {
     VG4_RndMatrWorld = MatrIdentity();
     VG4_RndMatrWorld = MatrMulMatr(VG4_RndMatrWorld,
-      MatrScale(VecSet(1.30, 1.30, 1.30)));
+      MatrScale(VecSet(0.30, 0.30, 0.30)));
     VG4_RndMatrWorld = MatrMulMatr(VG4_RndMatrWorld,
       MatrRotateY((Uni->TimerSpeed * Ani->Time) * 30 * 0 + 0 * Uni->TimerShift));
     VG4_RndMatrWorld = MatrMulMatr(VG4_RndMatrWorld,
