@@ -1,6 +1,6 @@
 /* FILE NAME: LOADPRIM.C
  * PROGRAMMER: VG4
- * DATE: 13.06.2016
+ * DATE: 18.06.2016
  * PURPOSE: Render handle functions.
  */
 
@@ -8,6 +8,17 @@
 #include <string.h>
 
 #include "anim.h"
+
+/* Load object transform matrix */
+MATR VG4_RndObjLoadMatrix =
+{
+  {
+    {1, 0, 0, 0},
+    {0, 1, 0, 0},
+    {0, 0, 1, 0},
+    {0, 0, 0, 1}
+  }
+};
 
 /* Load object from '*.g3d' file function.
  * ARGUMENTS:
@@ -20,22 +31,21 @@
  */
 BOOL VG4_RndObjLoad( vg4OBJ *Obj, CHAR *FileName )
 {
+  INT p, i, NumOfV, NumOfI, NumOfPrimitives;
+  DWORD Sign, size;
   FILE *F;
-  DWORD Sign;
-  INT NumOfPrimitives;
-  CHAR MtlFile[300];
-  INT NumOfV;
-  INT NumOfI;
-  CHAR Mtl[300];
-  INT p;
   vg4VERTEX *V;
   INT *I;
+  MATR MInv;
+  CHAR MtlFile[300], Mtl[300];
 
-  memset(Obj, 0, sizeof(vg4OBJ));
+  VG4_RndObjCreate(Obj);
 
   F = fopen(FileName, "rb");
   if (F == NULL)
     return FALSE;
+
+  MInv = MatrTranspose(MatrInverse(VG4_RndObjLoadMatrix));
 
   /* File structure:
    *   4b Signature: "G3D\0"    CHAR Sign[4];
@@ -67,7 +77,7 @@ BOOL VG4_RndObjLoad( vg4OBJ *Obj, CHAR *FileName )
   fread(MtlFile, 1, 300, F);
   VG4_RndLoadMaterials(MtlFile);
 
-  /* Allocate mnemory for primitives */
+  /* Allocate memory for primitives */
   if ((Obj->Prims = malloc(sizeof(vg4PRIM) * NumOfPrimitives)) == NULL)
   {
     fclose(F);
@@ -83,69 +93,31 @@ BOOL VG4_RndObjLoad( vg4OBJ *Obj, CHAR *FileName )
     fread(Mtl, 1, 300, F);
 
     /* Allocate memory for primitive */
-    if ((V = malloc(sizeof(vg4VERTEX) * NumOfV + sizeof(INT) * NumOfI)) == NULL)
+    size = sizeof(vg4VERTEX) * NumOfV + sizeof(INT) * NumOfI;
+    if ((V = malloc(size)) == NULL)
     {
       while (p-- > 0)
-      {
-        glBindVertexArray(Obj->Prims[p].VA);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glDeleteBuffers(1, &Obj->Prims[p].VBuf);
-        glBindVertexArray(0);
-        glDeleteVertexArrays(1, &Obj->Prims[p].VA);
-        glDeleteBuffers(1, &Obj->Prims[p].IBuf);
-      }
+        VG4_RndPrimFree(&Obj->Prims[p]);
       free(Obj->Prims);
       memset(Obj, 0, sizeof(vg4OBJ));
       fclose(F);
       return FALSE;
     }
+    memset(V, 0, size);
     I = (INT *)(V + NumOfV);
-    Obj->Prims[p].NumOfI = NumOfI;
-    Obj->Prims[p].M = MatrIdentity();
+    /* Read primitive data */
+    fread(V, 1, size, F);
+
+    /* Transform vertex */
+    for (i = 0; i < NumOfV; i++)
+    {
+      V[i].P = VecMulMatr43(V[i].P, VG4_RndObjLoadMatrix);
+      V[i].N = VecMulMatr43(V[i].N, MInv);
+    }
+
+    VG4_RndPrimCreate(&Obj->Prims[p], V, NumOfV, I, NumOfI);
     Obj->Prims[p].MtlNo = VG4_RndFindMaterial(Mtl);
-    fread(V, sizeof(vg4VERTEX), NumOfV, F);
-    fread(I, sizeof(INT), NumOfI, F);
-
-    /* Create OpenGL buffers */
-    glGenVertexArrays(1, &Obj->Prims[p].VA);
-    glGenBuffers(1, &Obj->Prims[p].VBuf);
-    glGenBuffers(1, &Obj->Prims[p].IBuf);
-
-    /* Activate vertex array */
-    glBindVertexArray(Obj->Prims[p].VA);
-    /* Activate vertex buffer */
-    glBindBuffer(GL_ARRAY_BUFFER, Obj->Prims[p].VBuf);
-    /* Store vertex data */
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vg4VERTEX) * NumOfV, V, GL_STATIC_DRAW);
-
-    /* Setup data order */
-    /*                    layout,
-     *                      components count,
-     *                          type
-     *                                    should be normalize,
-     *                                           vertex structure size in bytes (stride),
-     *                                               offset in bytes to field start */
-    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
-                          (VOID *)0); /* position */
-    glVertexAttribPointer(1, 2, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
-                          (VOID *)sizeof(VEC)); /* texture coordinates */
-    glVertexAttribPointer(2, 3, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
-                          (VOID *)(sizeof(VEC) + sizeof(VEC2))); /* normal */
-    glVertexAttribPointer(3, 4, GL_FLOAT, FALSE, sizeof(vg4VERTEX),
-                          (VOID *)(sizeof(VEC) * 2 + sizeof(VEC2))); /* color */
-
-    /* Enable used attributes */
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-
-    /* Indices */
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Obj->Prims[p].IBuf);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INT) * NumOfI, I, GL_STATIC_DRAW);
-
-    /* Disable vertex array */
-    glBindVertexArray(0);
+    Obj->Prims[p].Id = p;
 
     free(V);
   }

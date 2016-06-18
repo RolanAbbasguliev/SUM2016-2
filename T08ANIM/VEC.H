@@ -146,6 +146,39 @@ __inline VEC VecSet( FLT X, FLT Y, FLT Z )
   return v;
 } /* End of 'VecSet' function */
 
+/* Construct vector function.
+ * ARGUMENTS:
+ *   - vertor dublicate coordinates:
+ *       FLT X;
+ * RETURNS:
+ *   (VEC) constructed structure.
+ */
+__inline VEC VecSet1( FLT X )
+{
+  VEC v;
+
+  v.X = X;
+  v.Y = X;
+  v.Z = X;
+  return v;
+} /* End of 'VecSet1' function */
+
+/* Construct 2 components vector function.
+ * ARGUMENTS:
+ *   - vertor coordinates:
+ *       FLT X, Y;
+ * RETURNS:
+ *   (VEC2) constructed structure.
+ */
+__inline VEC2 Vec2Set( FLT X, FLT Y )
+{
+  VEC2 v;
+
+  v.X = X;
+  v.Y = Y;
+  return v;
+} /* End of 'Vec2Set' function */
+
 /* Construct 4 components vector function.
  * ARGUMENTS:
  *   - vertor Cartesian coordinates:

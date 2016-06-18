@@ -23,7 +23,7 @@ out vec2 DrawTexCoord;
 
 void main( void )
 {
-  gl_Position = MatrProj * MatrView * MatrWorld * vec4(InPosition.xzy, 1);
+  gl_Position = MatrProj * MatrView * MatrWorld * vec4(InPosition, 1);
 
   DrawColor = InColor; //vec4(InNormal * 2, 1);
   DrawPos = InPosition;

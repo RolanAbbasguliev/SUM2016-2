@@ -1,6 +1,6 @@
 /* FILE NAME: ANIM.H
  * PROGRAMMER: VG4
- * DATE: 13.06.2016
+ * DATE: 18.06.2016
  * PURPOSE: Animation system definitions.
  */
 
@@ -184,19 +184,28 @@ typedef struct
 {
   /* OpenGL buffers */
   INT
-    VA,   /* Vertex array */
-    VBuf, /* Vertex buffer */
-    IBuf; /* Index buffer */
-  INT NumOfI;       /* Facets index array size */
-  MATR M; /* Primitive transformation matrix */
-  INT MtlNo; /* Material number */
+    VA,       /* Vertex array */
+    VBuf,     /* Vertex buffer */
+    IBuf;     /* Index buffer */
+  INT NumOfI; /* Facets index array size */
+  MATR M;     /* Primitive transformation matrix */
+  INT MtlNo;  /* Material number */
+  INT Id;     /* Primitive Id */
 } vg4PRIM;
+
+/* Grid geometry representation type */
+typedef struct
+{
+  INT W, H;     /* Grid size in vertices */
+  vg4VERTEX *V; /* Grid points */
+} vg4GRID;
 
 /* Object representation type */
 typedef struct
 {
-  vg4PRIM *Prims;
-  INT NumOfPrims;
+  vg4PRIM *Prims; /* Primitives array */
+  INT NumOfPrims; /* Primitives array size */
+  MATR M;         /* Object transformation matrix */
 } vg4OBJ;
 
 /* Material representation type */
@@ -221,6 +230,9 @@ extern DBL
   VG4_RndFarClip,  /* Far clip plane */
   VG4_RndProjSize; /* Project plane size */
 
+/* Load object transform matrix */
+extern MATR VG4_RndObjLoadMatrix;
+
 /* Shader support */
 extern UINT VG4_RndPrg;
 
@@ -234,6 +246,54 @@ extern INT VG4_RndNumOfMaterials;
  * RETURNS: None.
  */
 VOID VG4_RndSetProj( VOID );
+
+/* Primitive create function.
+ * ARGUMENTS:
+ *   - primitive structure pointer:
+ *       vg4PRIM *Pr;
+ *   - vertex array:
+ *       vg4VERTEX *V;
+ *   - vertex array size:
+ *       INT NumOfV;
+ *   - index array:
+ *       INT *I;
+ *   - INT array size:
+ *       INT NumOfI;
+ * RETURNS: None.
+ */
+VOID VG4_RndPrimCreate( vg4PRIM *Pr, vg4VERTEX *V, INT NumOfV, INT *I, INT NumOfI );
+
+/* Primitive draw function.
+ * ARGUMENTS:
+ *   - primitive structure pointer:
+ *       vg4PRIM *Pr;
+ * RETURNS: None.
+ */
+VOID VG4_RndPrimDraw( vg4PRIM *Pr );
+
+/* Primitive free function.
+ * ARGUMENTS:
+ *   - primitive structure pointer:
+ *       vg4PRIM *Pr;
+ * RETURNS: None.
+ */
+VOID VG4_RndPrimFree( vg4PRIM *Pr );
+
+/* Object create function.
+ * ARGUMENTS:
+ *   - object structure pointer:
+ *       vg4OBJ *Obj;
+ * RETURNS: None.
+ */
+VOID VG4_RndObjCreate( vg4OBJ *Obj );
+
+/* Object free function.
+ * ARGUMENTS:
+ *   - object structure pointer:
+ *       vg4OBJ *Obj;
+ * RETURNS: None.
+ */
+VOID VG4_RndObjFree( vg4OBJ *Obj );
 
 /* Object draw function.
  * ARGUMENTS:
@@ -254,13 +314,66 @@ VOID VG4_RndObjDraw( vg4OBJ *Obj );
  */
 BOOL VG4_RndObjLoad( vg4OBJ *Obj, CHAR *FileName );
 
-/* Object free function.
+/* Grid creation function.
  * ARGUMENTS:
- *   - object structure pointer:
- *       vg4OBJ *Obj;
+ *   - grid pointer:
+ *       vg4GRID *G;
+ *   - grid size in vertices:
+ *       INT W, H;
+ * RETURNS:
+ *   (BOOL) TRUE if success, FALSE otherwise.
+ */
+BOOL VG4_GridCreate( vg4GRID *G, INT W, INT H );
+
+/* Grid free function.
+ * ARGUMENTS:
+ *   - grid pointer:
+ *       vg4GRID *G;
  * RETURNS: None.
  */
-VOID VG4_RndObjFree( vg4OBJ *Obj );
+VOID VG4_GridFree( vg4GRID *G );
+
+/* Grid to primitive convert function.
+ * ARGUMENTS:
+ *   - grid pointer:
+ *       vg4GRID *G;
+ *   - primitive pointer:
+ *       vg4PRIM *Pr;
+ * RETURNS: None.
+ */
+VOID VG4_Grid2Prim( vg4GRID *G, vg4PRIM *Pr );
+
+/* Grid vertex normals evaluation function.
+ * ARGUMENTS:
+ *   - grid pointer:
+ *       vg4GRID *G;
+ * RETURNS: None.
+ */
+VOID VG4_GridEvalNormals( vg4GRID *G );
+
+/* Create height field primitive from image function.
+ * ARGUMENTS:
+ *   - primitive pointer:
+ *       vg4PRIM *Pr;
+ *   - image file name:
+ *       CHAR *FileName;
+ * RETURNS:
+ *   (BOOL) TRUE if success, FALSE otherwise.
+ */
+BOOL VG4_RndPrimCreateLandscape( vg4PRIM *Pr, CHAR *FileName );
+
+/* Create height field primitive from image function.
+ * ARGUMENTS:
+ *   - primitive pointer:
+ *       vg4PRIM *Pr;
+ *   - radius:
+ *       FLT R;
+ *   - split counts:
+ *       INT N, M;
+ * RETURNS:
+ *   (BOOL) TRUE if success, FALSE otherwise.
+ */
+BOOL VG4_RndPrimCreateSphere( vg4PRIM *Pr, FLT R, INT N, INT M );
 
 /* Material find by name function.
  * ARGUMENTS:
@@ -278,6 +391,17 @@ INT VG4_RndFindMaterial( CHAR *Name );
  * RETURNS: None.
 */
 VOID VG4_RndLoadMaterials( CHAR *FileName );
+
+/* Make material from image function.
+ * ARGUMENTS:
+ *   - image pointer:
+ *       vg4IMG *Im;
+ *   - material name:
+ *       CHAR *MtlName;
+ * RETURNS:
+ *   (INT) new material number.
+ */
+INT VG4_RndMtlFromImage( vg4IMG *Im, CHAR *MtlName );
 
 /* Shader program load function.
  * ARGUMENTS:

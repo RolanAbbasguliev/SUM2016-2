@@ -12,10 +12,16 @@
 typedef struct
 {
   vg4UNIT;         /* Base unit fields */
-  VEC Pos;         /* Cube position */
   DBL TimerShift;  /* Timer shift phase value*/
   DBL TimerSpeed;  /* Timer speed value*/
-  vg4OBJ Cow;     /* Cow primitive */
+  vg4OBJ Cow;      /* Cow primitive */
+  vg4PRIM Pr;
+  vg4PRIM Land;
+  VEC Pos;         /* Model position */
+  FLT DirAngle;    /* Model oriantation */
+  FLT Speed;       /* Model movement speed */
+  FLT Twist;       /* Model twist */
+  VEC CamPos;      /* Camera position */
   UINT tx;
 } vg4UNIT_CUBE;
 
@@ -29,31 +35,29 @@ typedef struct
  */
 static VOID VG4_UnitInit( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
 {
+  Uni->CamPos = VecSet(30, 15, 8);
+  Uni->Pos = VecSet(0, 3, 0);
+  Uni->DirAngle = 0;
   /*
-  FLT tex[2][2] =
-  {
-    {1, 0},
-    {0, 1}
-  };
+  VG4_RndObjLoadMatrix = MatrMulMatr(MatrScale(VecSet1(0.01)), MatrRotateY(90));
+  VG4_RndObjLoad(&Uni->Cow, "models\\mi.g3d");
+  */
+  VG4_RndObjLoadMatrix = MatrMulMatr(MatrMulMatr(MatrTranslate(VecSet(0, 1, -5)), MatrScale(VecSet1(0.1))), MatrRotateY(90));
+  VG4_RndObjLoad(&Uni->Cow, "models\\sova30.g3d");
+
+  /*
   vg4IMG Im;
 
-  VG4_ImageLoad(&Im, "models/a.bmp");
+  VG4_RndPrimCreateSphere(&Uni->Pr, 1, 30, 30);
+  VG4_ImageLoad(&Im, "sky.bmp");
+  Uni->Pr.MtlNo = VG4_RndMtlFromImage(&Im, "sky_sphere");
+  VG4_ImageFree(&Im);
 
-  glGenTextures(1, &Uni->tx);
-  glBindTexture(GL_TEXTURE_2D, Uni->tx);
-  / * glTexImage2D(GL_TEXTURE_2D, 0, 1, 2, 2, 0, GL_LUMINANCE, GL_FLOAT, tex); * /
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, Im.W, Im.H, 0, GL_BGRA, GL_UNSIGNED_BYTE, Im.Bits);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  VG4_RndPrimCreateLandscape(&Uni->Land, "HF1.BMP");
+  VG4_ImageLoad(&Im, "HF1TEX.BMP");
+  Uni->Land.MtlNo = VG4_RndMtlFromImage(&Im, "land");
   VG4_ImageFree(&Im);
   */
-  Uni->Pos = VecSet(Rnd1() * 5, Rnd1() * 5, Rnd1() * 5);
-  Uni->TimerShift = Rnd1() * 59;
-  Uni->TimerSpeed = Rnd1() * 8;
-  Uni->Pos = VecSet(0, 0, 0);
-
-  VG4_RndObjLoad(&Uni->Cow, "models\\x6.g3d");
 
   /*
   switch (rand() % 5)
@@ -88,6 +92,8 @@ static VOID VG4_UnitInit( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
 static VOID VG4_UnitClose( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
 {
   VG4_RndObjFree(&Uni->Cow);
+  VG4_RndPrimFree(&Uni->Pr);
+  VG4_RndPrimFree(&Uni->Land);
 } /* End of 'VG4_UnitClose' function */
 
 /* Unit cube inter frame events handle function.
@@ -100,6 +106,23 @@ static VOID VG4_UnitClose( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
  */
 static VOID VG4_UnitResponse( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
 {
+  VEC V, Shift, POI;
+
+  Uni->Speed +=
+    (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN] - Ani->JY * 1) * Ani->DeltaTime;
+  Uni->DirAngle +=
+    30 * (Ani->Keys[VK_LEFT] - Ani->Keys[VK_RIGHT] + Ani->Mdx * 1 - Ani->JX * 1) * Ani->DeltaTime;
+  Uni->Twist = -30 * (Ani->Keys[VK_LEFT] - Ani->Keys[VK_RIGHT] + Ani->Mdx * 1 - Ani->JX * 1);
+
+  V = VecMulMatr43(VecSet(1, 0, 0), MatrRotateY(Uni->DirAngle));
+  Shift = VecMulMatr43(VecSet(-3, 3, 0), MatrRotateY(Uni->DirAngle));
+  Uni->Pos = VecAddVec(Uni->Pos, VecMulNum(V, Uni->Speed * Ani->DeltaTime));
+
+  POI = VecAddVec(Uni->Pos, Shift);
+  Uni->CamPos =
+    VecAddVec(Uni->CamPos,
+      VecMulNum(VecSubVec(POI, Uni->CamPos), Ani->DeltaTime));
+  VG4_RndMatrView = MatrView(Uni->CamPos, Uni->Pos, VecSet(0, 1, 0));
 } /* End of 'VG4_UnitResponse' function */
 
 /* Unit render function.
@@ -112,20 +135,14 @@ static VOID VG4_UnitResponse( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
  */
 static VOID VG4_UnitRender( vg4UNIT_CUBE *Uni, vg4ANIM *Ani )
 {
-  INT i;
+  VG4_RndMatrWorld =
+    MatrMulMatr(MatrMulMatr(MatrRotateX(Uni->Twist), MatrRotateY(Uni->DirAngle)), MatrTranslate(Uni->Pos));
+  VG4_RndObjDraw(&Uni->Cow);
 
-  for (i = 0; i <= 0; i++)
-  {
-    VG4_RndMatrWorld = MatrIdentity();
-    VG4_RndMatrWorld = MatrMulMatr(VG4_RndMatrWorld,
-      MatrScale(VecSet(0.30, 0.30, 0.30)));
-    VG4_RndMatrWorld = MatrMulMatr(VG4_RndMatrWorld,
-      MatrRotateY((Uni->TimerSpeed * Ani->Time) * 30 * 0 + 0 * Uni->TimerShift));
-    VG4_RndMatrWorld = MatrMulMatr(VG4_RndMatrWorld,
-      MatrTranslate(VecAddVec(Uni->Pos, VecSet(i * 1, 0, 0))));
-
-    VG4_RndObjDraw(&Uni->Cow);
-  }
+  VG4_RndMatrWorld = MatrScale(VecSet(30, 30, 30));
+  VG4_RndPrimDraw(&Uni->Pr);
+  VG4_RndMatrWorld = MatrScale(VecSet(27, 3, 27));
+  VG4_RndPrimDraw(&Uni->Land);
 } /* End of 'VG4_UnitRender' function */
 
 /* Unit cube creation function.

@@ -200,21 +200,41 @@
 					>
 				</File>
 				<File
-					RelativePath=".\LOADPRIM.C"
-					>
-				</File>
-				<File
-					RelativePath=".\RENDER.C"
-					>
-				</File>
-				<File
-					RelativePath=".\SHADERS.C"
-					>
-				</File>
-				<File
 					RelativePath=".\UNITS.C"
 					>
 				</File>
+				<Filter
+					Name="Render"
+					>
+					<File
+						RelativePath=".\GRID.C"
+						>
+					</File>
+					<File
+						RelativePath=".\LOADPRIM.C"
+						>
+					</File>
+					<File
+						RelativePath=".\MTL.C"
+						>
+					</File>
+					<File
+						RelativePath=".\OBJ3D.C"
+						>
+					</File>
+					<File
+						RelativePath=".\PRIM.C"
+						>
+					</File>
+					<File
+						RelativePath=".\RENDER.C"
+						>
+					</File>
+					<File
+						RelativePath=".\SHADERS.C"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Math Support"

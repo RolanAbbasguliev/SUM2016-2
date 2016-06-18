@@ -59,6 +59,7 @@ static VOID VG4_UnitResponse( vg4UNIT_CONTROL *Uni, vg4ANIM *Ani )
     Ani->IsPause = !Ani->IsPause;
 
   /* Uni->Pos.Y += Ani->JY * Ani->GlobalDeltaTime; */
+  /*
   Uni->Pos = VecMulMatr43(Uni->Pos, MatrRotateX(59 * Ani->JY * Ani->GlobalDeltaTime));
   Uni->Pos = VecMulMatr43(Uni->Pos, MatrRotateY(59 * Ani->JX * Ani->GlobalDeltaTime));
 
@@ -75,6 +76,7 @@ static VOID VG4_UnitResponse( vg4UNIT_CONTROL *Uni, vg4ANIM *Ani )
   Uni->Pos = VecMulNum(Uni->Pos, (r + Ani->Mdz * Ani->GlobalDeltaTime * 0.1) / r);
 
   VG4_RndMatrView = MatrView(Uni->Pos, VecSet(0, 0, 0), VecSet(0, 1, 0));
+  */
 } /* End of 'VG4_UnitResponse' function */
 
 /* Unit clock render function.

@@ -258,6 +258,36 @@ VOID VG4_AnimRender( VOID )
   /* Clear background */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  /*** Draw debug grid ***/
+  if (1)
+  {
+    MATR M = MatrMulMatr(VG4_RndMatrView, VG4_RndMatrProj);
+
+    glUseProgram(0);
+    glLoadMatrixf(M.A[0]);
+    glBegin(GL_LINES);
+      glColor3d(1, 0, 0);
+      glVertex3d(0, 0, 0);
+      glVertex4d(1, 0, 0, 0);
+      glColor3d(0, 1, 0);
+      glVertex3d(0, 0, 0);
+      glVertex4d(0, 1, 0, 0);
+      glColor3d(0, 0, 1);
+      glVertex3d(0, 0, 0);
+      glVertex4d(0, 0, 1, 0);
+
+      glColor3d(0.88, 0.88, 0.88);
+      for (i = -100; i <= 100; i++)
+      {
+        glVertex3d(i, 0, -100);
+        glVertex3d(i, 0, 100);
+
+        glVertex3d(-100, 0, i);
+        glVertex3d(100, 0, i);
+      }
+    glEnd();
+  }
+
   /*** Render all units ***/
   for (i = 0; i < VG4_Anim.NumOfUnits; i++)
   {

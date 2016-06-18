@@ -36,8 +36,8 @@ vec3 Shade( vec3 N )
   float nl = dot(L, N);
   if (IsTexture == 1)
   {
-    vec4 tc = texture2D(Texture, DrawTexCoord);
-
+    vec4 tc = texture2D(Texture, DrawTexCoord - vec2(0.005, 0.005));
+    /* col = Ka * tc.rgb; */
     col += Kd * tc.rgb * max(nl, 0);
   }
   else
@@ -77,6 +77,6 @@ void main( void )
   OutColor = 2 * nl * tc.rgba;
   OutColor = vec4(Ka + Kd * nl + Ks * 0, 1) + tc;
   */
-  OutColor = vec4(Shade(normalize(DrawNormal)) * 1, Trans);
-  OutColor = vec4(normalize(DrawNormal.zxy), Trans);
+  //OutColor = vec4(Shade(normalize(DrawNormal)) * 1, Trans);
+  OutColor = vec4(tc.rgb * 2, Trans);
 }
